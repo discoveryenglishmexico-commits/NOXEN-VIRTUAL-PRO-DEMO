@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOXEN VIRTUAL | Virtual Campus de Alta Gama by Discovery</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/index.css">
+<style>
+:root{
+  --bg:#04050e;
+  --bg2:#080b1c;
+  --panel:#0b0f24;
+  --panel2:#0e1330;
+  --cyan:#00e5ff;
+  --magenta:#ff2fd6;
+  --gold:#ffc94d;
+  --green:#2bffa7;
+  --red:#ff4d6a;
+  --txt:#e8ecff;
+  --muted:#9aa3c7;
+  --line:rgba(0,229,255,.16);
+}
+body.light-mode{
+  --bg:#f0f2f5;
+  --bg2:#e6e9f0;
+  --panel:#ffffff;
+  --panel2:#f7f9fc;
+  --cyan:#0088aa;
+  --magenta:#cc0066;
+  --gold:#b8860b;
+  --green:#008800;
+  --txt:#111111;
+  --muted:#555555;
+  --line:rgba(0,136,170,.2);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+  line-height:1.65;
+  transition:background .5s ease,color .5s ease;
+}
+::selection{background:var(--magenta);color:#fff}
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%,transparent 40%,rgba(2,3,10,.75) 100%)}
+body.light-mode .vignette{background:radial-gradient(ellipse at 50% 0%,transparent 50%,rgba(240,242,245,.6) 100%)}
+.wrap{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* ============ NAV ============ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  backdrop-filter:blur(16px);
+  background:rgba(4,5,14,.72);
+  border-bottom:1px solid var(--line);
+  transition:background .5s ease;
+}
+body.light-mode nav{background:rgba(240,242,245,.85)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.14em;
+  background:linear-gradient(90deg,var(--cyan),var(--magenta),var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap;text-decoration:none}
+.logo .zap{color:var(--gold);-webkit-text-fill-color:var(--gold);animation:zapflick 3s infinite}
+@keyframes zapflick{0%,90%,100%{opacity:1}92%{opacity:.2}94%{opacity:1}96%{opacity:.3}}
+.nav-links{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
+.nav-links a{
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:8px;
+  border:1px solid transparent;transition:.3s;position:relative;
+}
+.nav-links a:hover{color:var(--cyan);border-color:rgba(0,229,255,.35);
+  box-shadow:0 0 14px rgba(0,229,255,.25),inset 0 0 10px rgba(0,229,255,.08);text-shadow:0 0 8px var(--cyan)}
+body.light-mode .nav-links a:hover{text-shadow:none;box-shadow:0 0 8px rgba(0,136,170,.2)}
+.nav-links a.active{color:#fff;border-color:var(--magenta);
+  box-shadow:0 0 16px rgba(255,47,214,.4),inset 0 0 10px rgba(255,47,214,.12);text-shadow:0 0 8px var(--magenta)}
+body.light-mode .nav-links a.active{text-shadow:none}
+
+.theme-btn{
+  background:transparent;border:1px solid var(--line);color:var(--txt);cursor:pointer;
+  padding:8px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  transition:.3s;margin-left:6px;
+}
+.theme-btn:hover{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 14px rgba(0,229,255,.3);transform:scale(1.08)}
+body.light-mode .theme-btn:hover{box-shadow:0 0 8px rgba(0,136,170,.3)}
+
+/* ============ LED STRIP ============ */
+.leds{display:flex;gap:14px;justify-content:center;align-items:center;padding:6px 0}
+.led{width:7px;height:7px;border-radius:50%;background:#1a2040;position:relative;animation:ledblink 2.4s infinite}
+body.light-mode .led{background:#c8ccd8}
+.led.c{--lc:var(--cyan)} .led.m{--lc:var(--magenta)} .led.g{--lc:var(--gold)} .led.v{--lc:var(--green)}
+@keyframes ledblink{
+  0%,100%{background:#1a2040;box-shadow:none}
+  12%{background:var(--lc);box-shadow:0 0 10px var(--lc),0 0 22px var(--lc)}
+  30%{background:#1a2040;box-shadow:none}
+}
+body.light-mode @keyframes ledblink{
+  0%,100%{background:#c8ccd8;box-shadow:none}
+  12%{background:var(--lc);box-shadow:0 0 8px var(--lc)}
+  30%{background:#c8ccd8;box-shadow:none}
+}
+
+/* ============ HERO ============ */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;padding:130px 24px 60px}
+.brain-box{position:relative;width:300px;height:300px;margin-bottom:8px}
+.brain-box svg{width:100%;height:100%;filter:drop-shadow(0 0 26px rgba(0,229,255,.35))}
+body.light-mode .brain-box svg{filter:drop-shadow(0 0 12px rgba(0,136,170,.3))}
+.ring{fill:none;stroke-width:1.2;stroke-dasharray:6 10;transform-origin:150px 150px}
+.ring1{stroke:rgba(0,229,255,.5);animation:spin 26s linear infinite}
+.ring2{stroke:rgba(255,47,214,.4);animation:spin 34s linear infinite reverse}
+.ring3{stroke:rgba(255,201,77,.35);animation:spin 44s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.node{animation:nodepulse 2s infinite}
+@keyframes nodepulse{0%,100%{opacity:.35;r:3}50%{opacity:1;r:4.5}}
+.bolt{stroke:var(--gold);stroke-width:2;fill:none;stroke-linecap:round;
+  filter:drop-shadow(0 0 6px var(--gold));opacity:0;animation:boltflash 4s infinite}
+.bolt2{animation-delay:2s;stroke:var(--magenta);filter:drop-shadow(0 0 6px var(--magenta))}
+@keyframes boltflash{0%,88%,100%{opacity:0}90%{opacity:1}92%{opacity:.2}94%{opacity:1}97%{opacity:0}}
+.core{animation:corepulse 3s ease-in-out infinite}
+@keyframes corepulse{0%,100%{opacity:.85}50%{opacity:1;filter:drop-shadow(0 0 18px var(--cyan))}}
+
+.kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.5em;text-transform:uppercase;
+  color:var(--cyan);text-shadow:0 0 14px var(--cyan);margin-bottom:14px}
+body.light-mode .kicker{text-shadow:none}
+h1.glitch{
+  font-family:'Space Grotesk',sans-serif;font-weight:700;
+  font-size:clamp(2.6rem,8vw,5.6rem);letter-spacing:.04em;line-height:1.02;position:relative;
+  background:linear-gradient(92deg,#fff 10%,var(--cyan) 45%,var(--magenta) 75%,var(--gold) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+body.light-mode h1.glitch{
+  background:linear-gradient(92deg,#111 10%,var(--cyan) 45%,var(--magenta) 75%,var(--gold) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+h1.glitch::before,h1.glitch::after{
+  content:attr(data-text);position:absolute;inset:0;
+  background:inherit;-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.7;
+}
+h1.glitch::before{animation:gl1 5s infinite;clip-path:inset(20% 0 55% 0)}
+h1.glitch::after{animation:gl2 5s infinite;clip-path:inset(60% 0 12% 0)}
+@keyframes gl1{0%,93%,100%{transform:none}94%{transform:translate(-6px,2px)}96%{transform:translate(5px,-2px)}98%{transform:translate(-3px,1px)}}
+@keyframes gl2{0%,93%,100%{transform:none}95%{transform:translate(6px,-2px)}97%{transform:translate(-5px,2px)}}
+
+.typing-text{
+  display:inline-block;color:var(--magenta);
+  border-right:3px solid var(--magenta);
+  padding-right:8px;
+  animation:blink .75s step-end infinite;
+  text-shadow:0 0 15px rgba(255,47,214,.5);
+  font-family:'JetBrains Mono',monospace;
+}
+body.light-mode .typing-text{text-shadow:none}
+@keyframes blink{50%{border-color:transparent}}
+
+.hero p.sub{max-width:720px;margin:22px auto 0;color:var(--muted);font-size:clamp(1rem,2vw,1.18rem)}
+.hero p.sub strong{color:var(--gold);text-shadow:0 0 10px rgba(255,201,77,.5)}
+body.light-mode .hero p.sub strong{text-shadow:none}
+.cta-row{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:38px}
+.btn-neon{
+  font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:.82rem;
+  padding:16px 34px;border-radius:12px;cursor:pointer;text-decoration:none;position:relative;overflow:hidden;
+  transition:.35s;border:1px solid var(--cyan);color:var(--cyan);background:rgba(0,229,255,.05);
+}
+body.light-mode .btn-neon{background:rgba(0,136,170,.08)}
+.btn-neon::after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transition:.6s}
+.btn-neon:hover::after{left:130%}
+.btn-neon:hover{color:#fff;background:rgba(0,229,255,.16);
+  box-shadow:0 0 24px rgba(0,229,255,.55),0 0 60px rgba(0,229,255,.25),inset 0 0 16px rgba(0,229,255,.2);
+  text-shadow:0 0 10px var(--cyan);transform:translateY(-3px)}
+body.light-mode .btn-neon:hover{color:#fff;text-shadow:none;box-shadow:0 8px 24px rgba(0,136,170,.25)}
+.btn-neon.mg{border-color:var(--magenta);color:var(--magenta);background:rgba(255,47,214,.05)}
+body.light-mode .btn-neon.mg{background:rgba(204,0,102,.08)}
+.btn-neon.mg:hover{background:rgba(255,47,214,.16);
+  box-shadow:0 0 24px rgba(255,47,214,.55),0 0 60px rgba(255,47,214,.25),inset 0 0 16px rgba(255,47,214,.2);
+  color:#fff;text-shadow:0 0 10px var(--magenta)}
+body.light-mode .btn-neon.mg:hover{text-shadow:none;box-shadow:0 8px 24px rgba(204,0,102,.25)}
+.scroll-hint{margin-top:56px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.3em;animation:bob 2s infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* ============ SECTIONS ============ */
+section{padding:96px 0;position:relative}
+.sec-head{margin-bottom:46px}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.4em;color:var(--magenta);
+  text-shadow:0 0 12px var(--magenta);display:block;margin-bottom:10px}
+body.light-mode .sec-num{text-shadow:none}
+h2{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(1.7rem,4.4vw,2.7rem);line-height:1.15;letter-spacing:.02em}
+h2 .grad{background:linear-gradient(90deg,var(--cyan),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2 .grad-gold{background:linear-gradient(90deg,var(--gold),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sec-head p{color:var(--muted);max-width:760px;margin-top:14px}
+h3{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;margin:44px 0 18px;color:#fff}
+body.light-mode h3{color:var(--txt)}
+h3 .tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.25em;padding:4px 10px;border-radius:6px;
+  vertical-align:middle;margin-left:10px;border:1px solid var(--line);color:var(--cyan);text-transform:uppercase}
+
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ============ CARDS / PANELS ============ */
+.panel{
+  background:linear-gradient(160deg,var(--panel),var(--bg2));
+  border:1px solid var(--line);border-radius:18px;padding:28px;position:relative;overflow:hidden;
+  transition:.4s;
+}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),var(--magenta),transparent);opacity:.55;transition:.4s}
+.panel:hover{border-color:rgba(0,229,255,.45);transform:translateY(-4px);
+  box-shadow:0 14px 44px rgba(0,229,255,.12),0 0 0 1px rgba(0,229,255,.12)}
+body.light-mode .panel:hover{box-shadow:0 14px 44px rgba(0,136,170,.12),0 0 0 1px rgba(0,136,170,.12)}
+.panel:hover::before{opacity:1;box-shadow:0 0 16px var(--cyan)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+
+.num-badge{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:16px;
+  background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.4);color:var(--cyan);
+  text-shadow:0 0 10px var(--cyan);box-shadow:inset 0 0 14px rgba(0,229,255,.12);transition:.4s}
+body.light-mode .num-badge{text-shadow:none;box-shadow:none;background:rgba(0,136,170,.08)}
+.panel:hover .num-badge{box-shadow:0 0 20px rgba(0,229,255,.5),inset 0 0 14px rgba(0,229,255,.25);animation:nodepulse2 1.2s infinite}
+@keyframes nodepulse2{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+
+/* ============ CALLOUTS ============ */
+.callout{border-radius:16px;padding:24px 26px;margin:26px 0;position:relative;border:1px solid;overflow:hidden}
+.callout .ico{font-size:1.3rem;margin-right:10px}
+.callout.shock{border-color:rgba(255,47,214,.5);background:linear-gradient(140deg,rgba(255,47,214,.09),rgba(11,15,36,.6));
+  box-shadow:0 0 30px rgba(255,47,214,.12),inset 0 0 30px rgba(255,47,214,.05);animation:shockglow 3.4s infinite}
+body.light-mode .callout.shock{background:linear-gradient(140deg,rgba(204,0,102,.06),rgba(255,255,255,.9))}
+@keyframes shockglow{0%,100%{box-shadow:0 0 22px rgba(255,47,214,.1),inset 0 0 30px rgba(255,47,214,.04)}
+  50%{box-shadow:0 0 44px rgba(255,47,214,.28),inset 0 0 34px rgba(255,47,214,.09)}}
+body.light-mode .callout.shock{animation:none;box-shadow:0 8px 24px rgba(204,0,102,.1)}
+.callout.gold{border-color:rgba(255,201,77,.45);background:linear-gradient(140deg,rgba(255,201,77,.08),rgba(11,15,36,.6))}
+body.light-mode .callout.gold{background:linear-gradient(140deg,rgba(184,134,11,.06),rgba(255,255,255,.9))}
+.callout.cy{border-color:rgba(0,229,255,.4);background:linear-gradient(140deg,rgba(0,229,255,.07),rgba(11,15,36,.6))}
+body.light-mode .callout.cy{background:linear-gradient(140deg,rgba(0,136,170,.06),rgba(255,255,255,.9))}
+.callout.green{border-color:rgba(43,255,167,.4);background:linear-gradient(140deg,rgba(43,255,167,.07),rgba(11,15,36,.6))}
+body.light-mode .callout.green{background:linear-gradient(140deg,rgba(0,136,0,.06),rgba(255,255,255,.9))}
+.callout h4{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;margin-bottom:8px;color:#fff}
+body.light-mode .callout h4{color:var(--txt)}
+.callout p{color:var(--muted);font-size:.94rem}
+.callout strong{color:var(--txt)}
+
+/* ============ SIMULADOR / LAB ============ */
+.decoder{background:linear-gradient(160deg,#0d1230,#070a1a);border:1px solid rgba(255,47,214,.35);
+  border-radius:22px;padding:34px;position:relative;overflow:hidden;box-shadow:0 0 50px rgba(255,47,214,.08)}
+body.light-mode .decoder{background:linear-gradient(160deg,#ffffff,#e6e9f0);box-shadow:0 14px 44px rgba(0,0,0,.08)}
+.decoder::before{content:'';position:absolute;top:-60%;left:-20%;width:140%;height:120%;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(0,229,255,.06),transparent 60%)}
+body.light-mode .decoder::before{display:none}
+.decoder h3{margin-top:0}
+
+.lab-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px}
+@media(max-width:900px){.lab-grid{grid-template-columns:1fr}}
+
+.setup-btn{
+  flex:1;min-width:120px;background:transparent;border:1px solid var(--line);
+  color:var(--muted);padding:12px;font-size:.8rem;font-weight:600;border-radius:8px;
+  cursor:pointer;transition:.3s;text-transform:uppercase;letter-spacing:1px;text-align:center;
+  font-family:'Space Grotesk',sans-serif;
+}
+.setup-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.setup-btn.active{background:rgba(0,229,255,.15);border-color:var(--cyan);color:var(--cyan);
+  box-shadow:0 0 15px rgba(0,229,255,.2);text-shadow:0 0 5px rgba(0,229,255,.5)}
+body.light-mode .setup-btn.active{text-shadow:none;box-shadow:0 4px 12px rgba(0,136,170,.15);background:rgba(0,136,170,.1)}
+.setup-btn.mg.active{background:rgba(255,47,214,.15);border-color:var(--magenta);color:var(--magenta);
+  box-shadow:0 0 15px rgba(255,47,214,.2);text-shadow:0 0 5px rgba(255,47,214,.5)}
+body.light-mode .setup-btn.mg.active{text-shadow:none;box-shadow:0 4px 12px rgba(204,0,102,.15);background:rgba(204,0,102,.1)}
+
+.btn-group{display:flex;gap:12px;flex-wrap:wrap}
+.control-group{margin-bottom:30px}
+.control-group label{
+  font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1.5px;margin-bottom:15px;display:flex;align-items:center;gap:8px;
+}
+.control-group label::before{content:"■";color:var(--magenta);font-size:.7rem}
+
+.preview-monitor{
+  background:#010103;border:1px solid var(--line);border-radius:12px;position:relative;overflow:hidden;
+  box-shadow:inset 0 0 50px rgba(0,0,0,.95);aspect-ratio:16/10;width:100%;transition:.5s;
+}
+body.light-mode .preview-monitor{background:#ffffff;box-shadow:inset 0 0 30px rgba(0,0,0,.08)}
+.scanline-sim{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(112,0,255,.15) 0%,rgba(0,0,0,.9) 100%);z-index:1;transition:.8s}
+body.light-mode .scanline-sim{background:radial-gradient(circle at 50% 50%,rgba(112,0,255,.05) 0%,rgba(255,255,255,.7) 100%)}
+.viewfinder-corner{position:absolute;width:15px;height:15px;border:2px solid rgba(0,229,255,.3);z-index:6}
+body.light-mode .viewfinder-corner{border-color:rgba(0,136,170,.5)}
+.top-left{top:15px;left:15px;border-right:none;border-bottom:none}
+.top-right{top:15px;right:15px;border-left:none;border-bottom:none}
+.bottom-left{bottom:15px;left:15px;border-right:none;border-top:none}
+.bottom-right{bottom:15px;right:15px;border-left:none;border-top:none}
+.monitor-center-aim{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;
+  border:1px dashed rgba(255,255,255,.15);border-radius:50%;z-index:4}
+body.light-mode .monitor-center-aim{border-color:rgba(0,0,0,.2)}
+.monitor-center-aim::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:6px;height:6px;background:var(--magenta);border-radius:50%;box-shadow:0 0 10px var(--magenta)}
+body.light-mode .monitor-center-aim::after{box-shadow:none}
+.monitor-hud-top{position:absolute;top:15px;left:15px;right:15px;display:flex;justify-content:space-between;align-items:center;
+  z-index:6;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.5);letter-spacing:1px}
+body.light-mode .monitor-hud-top{color:rgba(0,0,0,.6)}
+.brain-indicator{display:flex;align-items:center;gap:6px;color:var(--green);font-weight:700}
+.led-dot{width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 10px var(--green);animation:pulseLed 1s infinite}
+body.light-mode .led-dot{box-shadow:none}
+@keyframes pulseLed{50%{opacity:.3}}
+.monitor-hud-bottom{position:absolute;bottom:15px;left:15px;right:15px;z-index:6;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:1px;line-height:1.5}
+body.light-mode .monitor-hud-bottom{color:rgba(0,0,0,.6)}
+.hud-row{display:flex;justify-content:space-between;margin-top:2px}
+
+.calibration-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;margin-top:20px}
+.progress-container{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:15px}
+body.light-mode .progress-container{background:rgba(0,0,0,.1)}
+.progress-bar{width:0%;height:100%;background:linear-gradient(90deg,var(--cyan),var(--magenta));
+  box-shadow:0 0 10px var(--cyan);transition:width .1s ease}
+body.light-mode .progress-bar{box-shadow:none}
+.calibration-status{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:12px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:1px}
+.btn-calibrate{
+  width:100%;background:transparent;border:1px solid var(--magenta);color:var(--magenta);
+  padding:14px;font-family:'Space Grotesk',sans-serif;font-weight:700;text-transform:uppercase;
+  letter-spacing:2px;border-radius:8px;cursor:pointer;transition:.3s;
+  box-shadow:0 0 10px rgba(255,47,214,.1) inset;font-size:.8rem;
+}
+body.light-mode .btn-calibrate{box-shadow:none}
+.btn-calibrate:hover{background:var(--magenta);color:#fff;box-shadow:0 0 20px var(--magenta)}
+body.light-mode .btn-calibrate:hover{box-shadow:0 8px 20px rgba(204,0,102,.25)}
+
+.set-report-panel{display:none;background:rgba(43,255,167,.05);border:1px solid var(--green);
+  padding:25px;border-radius:10px;margin-top:20px;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.report-header{display:flex;align-items:center;gap:10px;color:var(--green);font-family:'Space Grotesk',sans-serif;
+  font-weight:700;margin-bottom:15px;font-size:1rem}
+.report-header span{width:10px;height:10px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green)}
+body.light-mode .report-header span{box-shadow:none}
+.whatsapp-export-btn{
+  display:block;background:#25D366;color:#fff;border:none;text-align:center;padding:15px;
+  font-weight:700;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;
+  text-decoration:none;transition:.2s;margin-top:15px;font-family:'Space Grotesk',sans-serif;font-size:.85rem;
+}
+.whatsapp-export-btn:hover{transform:scale(1.02);box-shadow:0 0 20px rgba(37,211,102,.4)}
+body.light-mode .whatsapp-export-btn:hover{box-shadow:0 5px 15px rgba(37,211,102,.3)}
+
+/* ============ SUBJECT CARDS ============ */
+.subject-card{
+  background:linear-gradient(160deg,var(--panel),var(--bg2));
+  border:1px solid var(--line);border-radius:12px;padding:25px;transition:.3s;position:relative;
+}
+.subject-card:hover{border-color:var(--cyan);box-shadow:0 0 15px rgba(0,229,255,.15);transform:scale(1.02)}
+body.light-mode .subject-card:hover{box-shadow:0 8px 20px rgba(0,136,170,.1)}
+.subject-card h4{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;color:var(--txt);margin-bottom:10px}
+.subject-card p{font-size:.85rem;color:var(--muted);line-height:1.5}
+
+.category-title{
+  font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--magenta);
+  margin:50px 0 25px 0;border-left:4px solid var(--magenta);padding-left:15px;
+  text-transform:uppercase;letter-spacing:2px;
+}
+
+/* ============ ENLACE CARDS ============ */
+.enlace-card{
+  background:linear-gradient(160deg,var(--panel),var(--bg2));
+  border:1px solid var(--line);padding:40px 30px;border-radius:12px;transition:.3s;
+}
+.enlace-card:hover{border-color:var(--cyan);box-shadow:0 14px 44px rgba(0,229,255,.12)}
+body.light-mode .enlace-card:hover{box-shadow:0 14px 44px rgba(0,136,170,.1)}
+.enlace-card h5{font-family:'Space Grotesk',sans-serif;font-size:.9rem;color:var(--cyan);letter-spacing:2px;
+  margin-bottom:20px;text-transform:uppercase;font-weight:700}
+.enlace-card p{color:var(--muted);font-size:.95rem;line-height:1.7}
+.enlace-card a{color:var(--magenta);text-decoration:none;font-weight:600;transition:.3s}
+.enlace-card a:hover{color:var(--cyan);text-shadow:0 0 5px rgba(0,229,255,.3)}
+body.light-mode .enlace-card a:hover{text-shadow:none}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--line);padding:52px 24px 40px;text-align:center;position:relative;z-index:2;
+  background:linear-gradient(180deg,transparent,rgba(8,11,28,.9))}
+body.light-mode footer{background:linear-gradient(180deg,transparent,rgba(240,242,245,.9))}
+footer .f-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.2em;font-size:1rem;
+  background:linear-gradient(90deg,var(--cyan),var(--magenta),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+footer p{color:var(--muted);font-size:.8rem;margin-top:12px;font-family:'JetBrains Mono',monospace;letter-spacing:.06em}
+
+.divider{display:flex;align-items:center;gap:16px;margin:0 auto;max-width:900px;padding:10px 0}
+.divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+
+@media(max-width:720px){
+  .nav-links a:not(.theme-btn){display:none}
+  section{padding:64px 0}
+  .decoder{padding:22px}
+  .brain-box{width:220px;height:220px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="vignette"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#inicio" class="logo"><span class="zap">⚡</span> NOXEN VIRTUAL</a>
+    <div class="nav-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#universo">Universo</a>
+      <a href="#malla">Plan</a>
+      <a href="#simulador">Simulador AR</a>
+      <a href="#registro">Matrícula</a>
+      <button id="theme-toggle" class="theme-btn" aria-label="Cambiar tema" title="Modo Claro / Oscuro">
+        <svg id="theme-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="inicio">
+  <div class="brain-box">
+    <svg viewBox="0 0 300 300">
+      <defs>
+        <radialGradient id="coreg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#00e5ff" stop-opacity=".9"/>
+          <stop offset="55%" stop-color="#ff2fd6" stop-opacity=".35"/>
+          <stop offset="100%" stop-color="#04050e" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle class="core" cx="150" cy="150" r="88" fill="url(#coreg)"/>
+      <circle class="ring ring1" cx="150" cy="150" r="118"/>
+      <circle class="ring ring2" cx="150" cy="150" r="132"/>
+      <circle class="ring ring3" cx="150" cy="150" r="145"/>
+      <g fill="none" stroke="#00e5ff" stroke-width="1.6" opacity=".85" stroke-linecap="round">
+        <path d="M150 70 C118 70 100 92 104 116 C88 122 84 144 98 154 C92 174 106 192 126 188 C132 206 158 210 168 194 C188 198 202 182 196 162 C212 152 208 128 192 122 C198 98 180 70 150 70 Z"
+          stroke-dasharray="420" stroke-dashoffset="420" style="animation:dash 6s ease forwards infinite alternate"/>
+        <path d="M150 70 L150 210" opacity=".5" stroke="#ff2fd6"/>
+        <path d="M104 116 L196 162 M98 154 L192 122 M126 188 L168 194" opacity=".35" stroke="#ffc94d"/>
+      </g>
+      <circle class="node" cx="150" cy="70" r="4" fill="#ffc94d" style="animation-delay:0s"/>
+      <circle class="node" cx="104" cy="116" r="4" fill="#00e5ff" style="animation-delay:.4s"/>
+      <circle class="node" cx="98" cy="154" r="4" fill="#ff2fd6" style="animation-delay:.8s"/>
+      <circle class="node" cx="126" cy="188" r="4" fill="#00e5ff" style="animation-delay:1.2s"/>
+      <circle class="node" cx="168" cy="194" r="4" fill="#ffc94d" style="animation-delay:1.6s"/>
+      <circle class="node" cx="196" cy="162" r="4" fill="#ff2fd6" style="animation-delay:2s"/>
+      <circle class="node" cx="192" cy="122" r="4" fill="#00e5ff" style="animation-delay:2.4s"/>
+      <path class="bolt" d="M60 40 L84 76 L66 80 L98 122"/>
+      <path class="bolt bolt2" d="M240 44 L216 82 L234 86 L204 126"/>
+      <path class="bolt" style="animation-delay:1s" d="M40 210 L78 196 L72 214 L112 206"/>
+      <path class="bolt bolt2" style="animation-delay:3s" d="M262 208 L224 196 L230 214 L190 208"/>
+      <style>@keyframes dash{from{stroke-dashoffset:420}to{stroke-dashoffset:0}}</style>
+    </svg>
+  </div>
+
+  <div class="kicker">Virtual Campus · Alta Gama by Discovery</div>
+  <h1 class="glitch" data-text="NOXEN GENERATION">NOXEN GENERATION</h1>
+  <p class="sub" style="margin-top:18px"><span class="typing-text" id="typingText"></span></p>
+  <p class="sub">Evoluciona tu intelecto en el ecosistema virtual más potente y flexible. Un modelo neurocognitivo construido para expandir el cerebro humano: <strong>una mente ágil, capaz y de alto rendimiento.</strong></p>
+
+  <div class="leds" style="margin-top:30px">
+    <span class="led c"></span><span class="led m" style="animation-delay:.2s"></span>
+    <span class="led g" style="animation-delay:.4s"></span><span class="led v" style="animation-delay:.6s"></span>
+    <span class="led c" style="animation-delay:.8s"></span><span class="led m" style="animation-delay:1s"></span>
+    <span class="led g" style="animation-delay:1.2s"></span><span class="led v" style="animation-delay:1.4s"></span>
+  </div>
+
+  <div class="cta-row">
+    <a href="#simulador" class="btn-neon">Abrir Consola Cognitiva</a>
+    <a href="#universo" class="btn-neon mg">⚡ Explorar Universo</a>
+  </div>
+  <div class="scroll-hint">▼ SCROLL ▼</div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= UNIVERSO ================= -->
+<section id="universo" class="reveal">
+  <div class="sec-head">
+    <span class="sec-num">// ECOSISTEMA 01</span>
+    <h2>Crecimiento <span class="grad-gold">Exponencial</span></h2>
+    <p>"No somos una plataforma tradicional. Integramos metodologías disruptivas creadas por líderes con visión de futuro, entrenando tu cerebro de forma holística hacia una <strong style="color:var(--gold)">mentalidad global</strong>."</p>
+  </div>
+
+  <div class="grid2">
+    <!-- APEX -->
+    <div class="panel" style="border-color:rgba(0,229,255,.4)">
+      <div class="num-badge" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.08)">01</div>
+      <h3 style="margin-top:0;font-size:1.4rem;color:var(--cyan)">APEX KINETIX <span class="tag">Soberanía Lectora</span></h3>
+      <p style="color:var(--muted);margin-bottom:18px">"Leer velozmente no es para romper récords; es un <strong style="color:var(--txt)">acto de soberanía mental</strong> para dominar la sobrecarga de información."</p>
+      <p style="color:var(--muted);font-size:.92rem">Integrado directamente en nuestras materias de Taller de Lectura y Redacción. Entrenarás tu <strong style="color:var(--cyan)">visión periférica</strong> a través de biomecánica óptica para alcanzar ritmos sugeridos de <strong style="color:var(--gold)">600 PPM con retención del 100%</strong>.</p>
+      <a href="https://discoveryenglishmexico-commits.github.io/APEX-KINETIX/simulador.html" target="_blank" class="btn-neon" style="margin-top:22px;display:inline-block;padding:12px 22px;font-size:.75rem">Iniciar Gimnasia Ocular →</a>
+    </div>
+
+    <!-- DISCOVERY -->
+    <div class="panel" style="border-color:rgba(255,47,214,.4)">
+      <div class="num-badge" style="border-color:var(--magenta);color:var(--magenta);background:rgba(255,47,214,.08);text-shadow:0 0 10px var(--magenta)">02</div>
+      <h3 style="margin-top:0;font-size:1.4rem;color:var(--magenta)">DISCOVERY NEURAL <span class="tag" style="border-color:rgba(255,47,214,.5);color:var(--magenta)">Revolución Idiomática</span></h3>
+      <p style="color:var(--muted);margin-bottom:18px">"The English language operates based on <strong style="color:var(--txt)">positional architecture</strong>. Verbs do not exist; they are structural bases activated by determiners."</p>
+      <p style="color:var(--muted);font-size:.92rem">Accede de manera directa a la neurobiología de la fluidez con el <strong style="color:var(--magenta)">método NBF</strong>. Una reprogramación cognitiva profunda mediante misiones contrarreloj de <strong style="color:var(--gold)">150 segundos</strong> diseñadas bajo estrés cognitivo controlado.</p>
+      <a href="https://discoveryenglishmexico-commits.github.io/maxneuroeducation.github.io/deportes-nbf.html" target="_blank" class="btn-neon mg" style="margin-top:22px;display:inline-block;padding:12px 22px;font-size:.75rem">Entrar al Reto NBF →</a>
+    </div>
+  </div>
+
+  <div class="callout shock" style="margin-top:36px">
+    <h4><span class="ico">⚡</span>El choque neurocognitivo</h4>
+    <p>El cerebro hispano procesa el inglés como si fuera <strong>traducción palabra por palabra</strong>. El método NBF rompe ese patrón y entrena al cerebro para <strong style="color:var(--gold)">reconocer estructuras posicionales</strong> en tiempo real, como lo hacen los hablantes nativos.</p>
+  </div>
+</section>
+
+<div class="divider reveal"><span class="led m"></span><div class="line"></div><span class="led c" style="animation-delay:.5s"></span><div class="line"></div><span class="led g" style="animation-delay:1s"></span></div>
+
+<!-- ================= MALLA ================= -->
+<section id="malla" class="reveal">
+  <div class="sec-head" style="text-align:center">
+    <span class="sec-num">// MALLA CURRICULAR</span>
+    <h2>Módulos de <span class="grad">Productividad</span> y Toma de Decisiones</h2>
+    <p style="margin:15px auto 0 auto">Diseñados estratégicamente para desarrollar tu <strong style="color:var(--gold)">pensamiento crítico</strong>, lectoescritura bilingüe, análisis de información y mentalidad global. Nuestro enfoque asegura tu certificación y éxito académico, tanto a nivel nacional como internacional.</p>
+  </div>
+
+  <h3 class="category-title reveal">Cuatrimestres Iniciales <span class="tag">Sincronización</span></h3>
+  <div class="grid3">
+    <div class="subject-card reveal"><h4>Matemáticas Exponenciales</h4><p>Estructuración lógica y pensamiento formal de alta resolución. Métodos numéricos avanzados y algoritmos.</p></div>
+    <div class="subject-card reveal"><h4>Química de Alquimia Molecular</h4><p>Estudio detallado de la composición química de la materia y balances energéticos en la física moderna.</p></div>
+    <div class="subject-card reveal"><h4>Metodología de la Investigación</h4><p>Análisis crítico de datos y recopilación formal de información científica con rigor académico impecable.</p></div>
+    <div class="subject-card reveal"><h4>Taller de Redacción Neuro-Lectora</h4><p>Integrado con APEX Kinetix para maximizar la velocidad y asimilación sintáctica profunda.</p></div>
+  </div>
+
+  <h3 class="category-title reveal">Cuatrimestres Avanzados <span class="tag">Especialización & Práctica</span></h3>
+  <div class="grid3">
+    <div class="subject-card reveal"><h4>Inglés con Estructura Posicional</h4><p>Integrado de raíz con el simulador neural de Discovery MAX. Desmantelamiento rápido de la sordera fonética.</p></div>
+    <div class="subject-card reveal"><h4>Informática y Programación</h4><p>Habilidades digitales de alto perfil. Desarrollo de software, interfaces web y automatización de procesos.</p></div>
+    <div class="subject-card reveal"><h4>Capacitación en Promoción Social</h4><p>Planificación de proyectos reales de impacto humano para incrustarse con éxito y empatía en la sociedad.</p></div>
+    <div class="subject-card reveal"><h4>Filosofía de la Tecnología & Ética</h4><p>Evaluación de los dilemas contemporáneos, inteligencia artificial y el rol de la mente humana en el futuro digital.</p></div>
+  </div>
+</section>
+
+<div class="divider reveal"><span class="led c"></span><div class="line"></div><span class="led v" style="animation-delay:.5s"></span><div class="line"></div><span class="led m" style="animation-delay:1s"></span></div>
+
+<!-- ================= SIMULADOR ================= -->
+<section id="simulador" class="reveal">
+  <div class="sec-head">
+    <span class="sec-num">// CONSOLA INTERACTIVA</span>
+    <h2>Enfoque Cortical <span class="grad-gold">NOXEN AR</span></h2>
+    <p>Simula las cargas de procesamiento mental antes de iniciar tus cuatrimestres. Calibra tus niveles de <strong style="color:var(--cyan)">atención</strong> y <strong style="color:var(--magenta)">ritmo de lectura</strong>.</p>
+  </div>
+
+  <div class="decoder">
+    <div class="lab-grid">
+      <!-- CONTROLES -->
+      <div class="lab-setup">
+        <h3 style="color:#fff;font-size:1.6rem;margin-bottom:25px;border-bottom:1px solid var(--line);padding-bottom:15px;text-transform:uppercase;letter-spacing:1px">Panel de Calibración</h3>
+
+        <div class="control-group">
+          <label>1. Frecuencia de Enfoque (Focus Streak)</label>
+          <div class="btn-group" id="ctrl-focus">
+            <button class="setup-btn active" data-freq="alpha" onclick="setFrequency('alpha')">Ondas Alpha (Concentración)</button>
+            <button class="setup-btn" data-freq="gamma" onclick="setFrequency('gamma')">Ondas Gamma (Alta Retención)</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>2. Método de Lectura (APEX Integrado)</label>
+          <div class="btn-group" id="ctrl-reading">
+            <button class="setup-btn active" data-ppm="200" onclick="setReading(200)">200 PPM (Estándar)</button>
+            <button class="setup-btn" data-ppm="600" onclick="setReading(600)">600 PPM (Soberano)</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>3. Arquitectura de Idioma (NBF Lógica)</label>
+          <div class="btn-group" id="ctrl-idioma">
+            <button class="setup-btn active" data-lang="esp" onclick="setIdiom('esp')">Español (Acción Verbal)</button>
+            <button class="setup-btn" data-lang="eng" onclick="setIdiom('eng')">Posicional (Sustantivos)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MONITOR -->
+      <div>
+        <div class="preview-monitor" id="monitor">
+          <div class="scanline-sim" id="scan-sim"></div>
+          <div class="viewfinder-corner top-left"></div>
+          <div class="viewfinder-corner top-right"></div>
+          <div class="viewfinder-corner bottom-left"></div>
+          <div class="viewfinder-corner bottom-right"></div>
+          <div class="monitor-center-aim"></div>
+
+          <div class="monitor-hud-top">
+            <span>CUMLA PROCESSOR V1.0</span>
+            <div class="brain-indicator">
+              <div class="led-dot"></div>
+              <span>BRAIN SYNC ACTIVE</span>
+            </div>
+          </div>
+
+          <div class="monitor-hud-bottom">
+            <div class="hud-row">
+              <span id="hud-freq">WAVES: ALPHA ACTIVE</span>
+              <span id="hud-signal" style="color:var(--green)">STATUS: WAITING SYNC</span>
+            </div>
+            <div class="hud-row">
+              <span id="hud-ppm">LÉXICO: 200 PPM</span>
+              <span id="hud-lang">STRUCTURE: VERBO DEPENDIENTE</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="calibration-box">
+          <div class="calibration-status">
+            <span id="calib-text">SINCRO DE ENFOQUE INESTABLE</span>
+            <span id="calib-percent">0% COGNICIÓN</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar" id="p-bar"></div>
+          </div>
+          <button class="btn-calibrate" id="btn-calc" onclick="calibrateClick()">
+            ⚡ Pulsar repetidamente para sincronizar mente
+          </button>
+        </div>
+
+        <div class="set-report-panel" id="report-panel">
+          <div class="report-header">
+            <span></span>
+            <h4>MATRÍCULA COGNITIVA COMPATIBLE (APROBADO)</h4>
+          </div>
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.5;text-align:left">
+            La consola virtual ha verificado una sincronización neural del <strong style="color:var(--txt)">100%</strong>. Estás listo para ingresar a la élite educativa de <strong style="color:var(--txt)">NOXEN VIRTUAL</strong> con un perfil lector y de aprendizaje cognitivo superior.
+          </p>
+          <a href="#" id="wa-final-link" target="_blank" class="whatsapp-export-btn">
+             Reclamar Matrícula con mi Configuración
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider reveal"><span class="led g"></span><div class="line"></div><span class="led c" style="animation-delay:.5s"></span><div class="line"></div><span class="led v" style="animation-delay:1s"></span></div>
+
+<!-- ================= REGISTRO ================= -->
+<section id="registro" class="reveal">
+  <div class="sec-head">
+    <span class="sec-num">// RESPALDO NEUROCOGNITIVO</span>
+    <h2>Validez y <span class="grad">Respaldo</span> Institucional</h2>
+    <p>Toda la tecnología futurista respaldada por <strong style="color:var(--gold)">Discovery Neuroeducation</strong> y el rigor metodológico basado en neurociencias cognitivas.</p>
+  </div>
+
+  <div class="grid3">
+    <div class="enlace-card reveal">
+      <h5>Validated Learning NBF METHOD / MAX PRO</h5>
+      <p>Virtual Home Skilling. <strong>MAX NEUROEDUCATION</strong> NEURAL KOGNITIX L2 <strong>ENGLISH AS A 2L</strong>. Certificación de habilidades lingüísticas profesionales.</p>
+    </div>
+    <div class="enlace-card reveal">
+      <h5>Contacto de Control Metodológico</h5>
+      <p>Vías oficiales de atención y aprobación:<br>Mensajes directos:<br><strong style="color:var(--txt)">55 6627 1814</strong> / <strong style="color:var(--txt)">33 2952 4668</strong><br>Email: <a href="mailto:discovery@somostudiscoverypremium.com">discovery@somostudiscoverypremium.com</a></p>
+    </div>
+    <div class="enlace-card reveal">
+      <h5>Ubicación Sede Bajío</h5>
+      <p>P de los virreyes 45, Puerta de Hierro, 45116 Zapopan, Jal.<br><br><a href="https://www.maxneuroeducation.com/" target="_blank">SOMOS TU DISCOVERY MAX →</a></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="leds" style="margin-bottom:24px">
+    <span class="led c"></span><span class="led m" style="animation-delay:.3s"></span>
+    <span class="led g" style="animation-delay:.6s"></span><span class="led v" style="animation-delay:.9s"></span>
+    <span class="led c" style="animation-delay:1.2s"></span>
+  </div>
+  <div class="f-logo">⚡ NOXEN VIRTUAL</div>
+  <p>© 2026 NOXEN VIRTUAL by Discovery Neuroeducation | MIT | ISK | Open AIM | Toño Vicas</p>
+  <p style="margin-top:6px;opacity:.5">Desarrollado bajo los más estrictos estándares de Soberanía Cognitiva.</p>
+</footer>
+
+<script>
+/* ============ PARTICLES ============ */
+(function(){
+  const cv=document.getElementById('particles'),ctx=cv.getContext('2d');
+  let W,H,parts=[];
+  const COLORS=['rgba(0,229,255,','rgba(255,47,214,','rgba(255,201,77,','rgba(43,255,167,'];
+  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+  resize();addEventListener('resize',resize);
+  for(let i=0;i<70;i++){
+    parts.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+.5,
+      vy:-(Math.random()*.35+.08),vx:(Math.random()-.5)*.2,
+      c:COLORS[Math.floor(Math.random()*COLORS.length)],a:Math.random(),da:(Math.random()*.02+.005)});
+  }
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    parts.forEach(p=>{
+      p.y+=p.vy;p.x+=p.vx;p.a+=p.da;
+      if(p.a>1||p.a<0)p.da*=-1;
+      if(p.y<-10){p.y=H+10;p.x=Math.random()*W}
+      if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.c+(Math.abs(p.a)*.7)+')';
+      ctx.shadowBlur=10;ctx.shadowColor=p.c+'.6)';
+      ctx.fill();ctx.shadowBlur=0;
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ============ THEME TOGGLE ============ */
+const themeBtn=document.getElementById('theme-toggle');
+const themeIcon=document.getElementById('theme-icon');
+const sunIcon=`<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+const moonIcon=`<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+if(localStorage.getItem('theme')==='light'){document.body.classList.add('light-mode');themeIcon.innerHTML=moonIcon}
+themeBtn.addEventListener('click',()=>{
+  document.body.classList.toggle('light-mode');
+  if(document.body.classList.contains('light-mode')){localStorage.setItem('theme','light');themeIcon.innerHTML=moonIcon}
+  else{localStorage.setItem('theme','dark');themeIcon.innerHTML=sunIcon}
+  if(currentFocusFreq)setFrequency(currentFocusFreq);
+});
+
+/* ============ TYPING EFFECT ============ */
+const texts=["Tecnología Mental","Soberanía Lectora","Revolución Cognitiva","Poder Tecnológico"];
+let count=0,index=0,currentText="",isDeleting=false;
+(function type(){
+  if(count===texts.length)count=0;
+  currentText=texts[count];
+  const letter=isDeleting?currentText.slice(0,--index):currentText.slice(0,++index);
+  document.getElementById('typingText').textContent=letter;
+  let typeSpeed=isDeleting?50:100;
+  if(!isDeleting&&letter.length===currentText.length){typeSpeed=2000;isDeleting=true}
+  else if(isDeleting&&letter.length===0){isDeleting=false;count++;typeSpeed=500}
+  setTimeout(type,typeSpeed);
+})();
+
+/* ============ REVEAL ============ */
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ============ SCROLLSPY ============ */
+const secs=[...document.querySelectorAll('section[id]')];
+const navLinks=[...document.querySelectorAll('.nav-links a[href^="#"]')];
+addEventListener('scroll',()=>{
+  let cur='';
+  secs.forEach(s=>{if(scrollY>=s.offsetTop-160)cur=s.id});
+  navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+
+/* ============ AUDIO ============ */
+const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+function playSciFiBeep(freq=800,duration=.1,type='sine'){
+  try{
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    const osc=audioCtx.createOscillator();
+    const gainNode=audioCtx.createGain();
+    osc.type=type;
+    osc.frequency.setValueAtTime(freq,audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(.08,audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);
+    osc.connect(gainNode);gainNode.connect(audioCtx.destination);
+    osc.start();osc.stop(audioCtx.currentTime+duration);
+  }catch(e){}
+}
+
+/* ============ SIMULADOR ============ */
+let currentFocusFreq="alpha";
+let readingPPM=200;
+let selectedIdiom="esp";
+let calibrationProgress=0;
+
+function updateHUD(){
+  document.getElementById('hud-freq').innerText=`WAVES: ${currentFocusFreq.toUpperCase()} ACTIVE`;
+  document.getElementById('hud-ppm').innerText=`LÉXICO: ${readingPPM} PPM`;
+  document.getElementById('hud-lang').innerText=`STRUCTURE: ${selectedIdiom==="esp"?"VERBO DEPENDIENTE":"POSICIONAL (SUSTANTIVOS)"}`;
+}
+
+function setFrequency(freq){
+  playSciFiBeep(650,.08,'square');
+  currentFocusFreq=freq;
+  const sim=document.getElementById('scan-sim');
+  document.querySelectorAll('#ctrl-focus .setup-btn').forEach(btn=>{
+    btn.classList.remove('active');
+    if(btn.getAttribute('data-freq')===freq)btn.classList.add('active');
+  });
+  const isLight=document.body.classList.contains('light-mode');
+  if(freq==='alpha'){
+    sim.style.background=isLight
+      ?'radial-gradient(circle at 50% 50%, rgba(112,0,255,.05) 0%, rgba(255,255,255,.7) 100%)'
+      :'radial-gradient(circle at 50% 50%, rgba(112,0,255,.15) 0%, rgba(0,0,0,.95) 100%)';
+  }else if(freq==='gamma'){
+    sim.style.background=isLight
+      ?'radial-gradient(circle at 50% 50%, rgba(0,136,170,.1) 0%, rgba(204,0,102,.05) 50%, rgba(255,255,255,.7) 100%)'
+      :'radial-gradient(circle at 50% 50%, rgba(0,229,255,.18) 0%, rgba(255,0,127,.1) 50%, rgba(0,0,0,.95) 100%)';
+  }
+  updateHUD();
+}
+
+function setReading(ppm){
+  playSciFiBeep(750,.08,'sine');
+  readingPPM=ppm;
+  document.querySelectorAll('#ctrl-reading .setup-btn').forEach(btn=>{
+    btn.classList.remove('active');
+    if(parseInt(btn.getAttribute('data-ppm'))===ppm)btn.classList.add('active');
+  });
+  updateHUD();
+}
+
+function setIdiom(lang){
+  playSciFiBeep(850,.08,'triangle');
+  selectedIdiom=lang;
+  document.querySelectorAll('#ctrl-idioma .setup-btn').forEach(btn=>{
+    btn.classList.remove('active');
+    if(btn.getAttribute('data-lang')===lang)btn.classList.add('active');
+  });
+  updateHUD();
+}
+
+function calibrateClick(){
+  if(calibrationProgress>=100)return;
+  calibrationProgress+=10;
+  if(calibrationProgress>100)calibrationProgress=100;
+  playSciFiBeep(450+(calibrationProgress*5),.1,'sine');
+  const pBar=document.getElementById('p-bar');
+  const pPercent=document.getElementById('calib-percent');
+  const pText=document.getElementById('calib-text');
+  const hudSignal=document.getElementById('hud-signal');
+  pBar.style.width=calibrationProgress+"%";
+  pPercent.innerText=calibrationProgress+"% COGNICIÓN";
+  pText.innerText="SINTONIZANDO CORTEX...";
+  pText.style.color="var(--cyan)";
+  if(calibrationProgress===100){
+    const notes=[523.25,659.25,783.99,1046.50];
+    notes.forEach((freq,idx)=>{setTimeout(()=>{playSciFiBeep(freq,.25,'triangle')},idx*120)});
+    pText.innerText="SINCRONIZACIÓN EXITOSA";
+    pText.style.color="var(--green)";
+    hudSignal.innerText="STATUS: BRAIN IN SYNC (100%)";
+    hudSignal.style.color="var(--green)";
+    document.getElementById('report-panel').style.display='block';
+    document.getElementById('btn-calc').style.display='none';
+    generarMensajeMatricula();
+  }
+}
+
+function generarMensajeMatricula(){
+  const msg=`⚡ ¡Hola NOXEN VIRTUAL! He calibrado mi perfil en el Simulador de Enfoque Cortical de Alta Gama con éxito.%0A%0A`
+    +`⚙️ *MI PERFIL COGNITIVO:*%0A`
+    +`🧠 *Frecuencia Cerebral:* ${currentFocusFreq.toUpperCase()}%0A`
+    +`📖 *Método de Lectura:* APEX Kinetix a ${readingPPM} PPM%0A`
+    +`🗣️ *Estructura NBF de Inglés:* ${selectedIdiom==="esp"?"Español tradicional":"Posicional (Sustantivos)"}%0A%0A`
+    +`🎓 *Estado del Cortex:* EN SINTONÍA (100%)%0A%0A`
+    +`Me gustaría recibir más información para inscribirme a NOXEN VIRTUAL (Discovery Max Neuroeducation). ¡Gracias!`;
+  document.getElementById('wa-final-link').href=`https://wa.me/5566271814?text=${msg}`;
+}
+
+setFrequency('alpha');
+</script>
+</body>
+</html>
