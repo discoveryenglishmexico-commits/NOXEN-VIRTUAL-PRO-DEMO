@@ -398,7 +398,7 @@ footer p{color:var(--muted);font-size:.8rem;margin-top:12px;font-family:'JetBrai
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="#inicio" class="logo"><span class="zap">⚡</span> NOXEN VIRTUAL</a>
+    <a href="#inicio" class="logo"><span class="zap"></span> NOXEN VIRTUAL</a>
     <div class="nav-links">
       <a href="#inicio">Inicio</a>
       <a href="#universo">Universo</a>
@@ -451,7 +451,7 @@ footer p{color:var(--muted);font-size:.8rem;margin-top:12px;font-family:'JetBrai
   <div class="kicker">Virtual Campus · Alta Gama by Discovery</div>
   <h1 class="glitch" data-text="NOXEN GENERATION">NOXEN GENERATION</h1>
   <p class="sub" style="margin-top:18px"><span class="typing-text" id="typingText"></span></p>
-  <p class="sub">Evoluciona tu intelecto en el ecosistema virtual más potente y flexible. Un modelo neurocognitivo construido para expandir el cerebro humano: <strong>una mente ágil, capaz y de alto rendimiento.</strong></p>
+  <p class="sub">Evoluciona tu intelecto en el ecosistema virtual más potente y flexible. Un modelo neurocognitivo construido para expandir el cerebro humano: <strong style="color:var(--gold)">una mente ágil, capaz y de alto rendimiento.</strong></p>
 
   <div class="leds" style="margin-top:30px">
     <span class="led c"></span><span class="led m" style="animation-delay:.2s"></span>
@@ -671,6 +671,198 @@ footer p{color:var(--muted);font-size:.8rem;margin-top:12px;font-family:'JetBrai
   <p style="margin-top:6px;opacity:.5">Desarrollado bajo los más estrictos estándares de Soberanía Cognitiva.</p>
 </footer>
 
+<!-- FIREBASE SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA12GJUgOXzlW5LW46Rco9rzFGzh1-oIWo",
+    authDomain: "noxen-virtual-pro.firebaseapp.com",
+    projectId: "noxen-virtual-pro",
+    storageBucket: "noxen-virtual-pro.firebasestorage.app",
+    messagingSenderId: "991137114602",
+    appId: "1:991137114602:web:519bc570f08a838e376a93",
+    measurementId: "G-CJN9D4YGG5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.firebaseAuth = auth;
+  window.firebaseDb = db;
+  window.firebaseUser = null;
+
+  onAuthStateChanged(auth, (user) => {
+    window.firebaseUser = user;
+    if (user) {
+      console.log('✅ Usuario logueado:', user.email);
+      updateUIForLoggedInUser(user);
+    } else {
+      console.log('❌ No hay usuario logueado');
+      updateUIForLoggedOutUser();
+    }
+  });
+
+  window.updateUIForLoggedInUser = function(user) {
+    const navLinks = document.querySelector('.nav-links');
+    const existingUserDiv = document.getElementById('user-info');
+    if (existingUserDiv) existingUserDiv.remove();
+    
+    const userDiv = document.createElement('div');
+    userDiv.id = 'user-info';
+    userDiv.style.cssText = 'display:flex;align-items:center;gap:10px;margin-left:auto';
+    userDiv.innerHTML = `
+      <span style="color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:0.75rem">${user.email}</span>
+      <button id="logout-btn" class="theme-btn" style="font-size:0.7rem;padding:6px 12px">Salir</button>
+    `;
+    navLinks.appendChild(userDiv);
+    
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        console.log('👋 Usuario cerró sesión');
+        location.reload();
+      });
+    });
+  };
+
+  window.updateUIForLoggedOutUser = function() {
+    const existingUserDiv = document.getElementById('user-info');
+    if (existingUserDiv) existingUserDiv.remove();
+    
+    const navLinks = document.querySelector('.nav-links');
+    const loginBtn = document.createElement('button');
+    loginBtn.id = 'login-btn';
+    loginBtn.className = 'theme-btn';
+    loginBtn.style.cssText = 'margin-left:auto;font-size:0.7rem;padding:6px 12px';
+    loginBtn.textContent = 'Ingresar';
+    loginBtn.onclick = () => showLoginModal();
+    navLinks.appendChild(loginBtn);
+  };
+
+  window.showLoginModal = function() {
+    const modal = document.createElement('div');
+    modal.id = 'login-modal';
+    modal.style.cssText = `
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);
+      z-index:1000;display:flex;align-items:center;justify-content:center;
+    `;
+    modal.innerHTML = `
+      <div style="background:var(--panel);border:1px solid var(--cyan);border-radius:16px;padding:40px;max-width:400px;width:90%;position:relative">
+        <button id="close-modal" style="position:absolute;top:15px;right:15px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.5rem">&times;</button>
+        <h2 style="font-family:'Space Grotesk',sans-serif;color:var(--cyan);margin-bottom:25px">Acceso NOXEN VIRTUAL</h2>
+        
+        <div id="login-form">
+          <input type="email" id="login-email" placeholder="Email" style="width:100%;padding:12px;margin-bottom:15px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt)">
+          <input type="password" id="login-password" placeholder="Contraseña" style="width:100%;padding:12px;margin-bottom:20px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt)">
+          <button id="do-login" class="btn-neon" style="width:100%">Ingresar</button>
+          <p style="text-align:center;margin-top:15px;color:var(--muted);font-size:0.85rem">
+            ¿No tienes cuenta? <a href="#" id="show-register" style="color:var(--magenta)">Regístrate</a>
+          </p>
+        </div>
+        
+        <div id="register-form" style="display:none">
+          <input type="email" id="register-email" placeholder="Email" style="width:100%;padding:12px;margin-bottom:15px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt)">
+          <input type="password" id="register-password" placeholder="Contraseña (mínimo 6 caracteres)" style="width:100%;padding:12px;margin-bottom:20px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt)">
+          <button id="do-register" class="btn-neon mg" style="width:100%">Crear Cuenta</button>
+          <p style="text-align:center;margin-top:15px;color:var(--muted);font-size:0.85rem">
+            ¿Ya tienes cuenta? <a href="#" id="show-login" style="color:var(--cyan)">Ingresa</a>
+          </p>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    document.getElementById('close-modal').onclick = () => modal.remove();
+    document.getElementById('show-register').onclick = (e) => {
+      e.preventDefault();
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'block';
+    };
+    document.getElementById('show-login').onclick = (e) => {
+      e.preventDefault();
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    };
+    
+    document.getElementById('do-login').onclick = async () => {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        modal.remove();
+        alert('✅ ¡Bienvenido de vuelta!');
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    };
+    
+    document.getElementById('do-register').onclick = async () => {
+      const email = document.getElementById('register-email').value;
+      const password = document.getElementById('register-password').value;
+      if (password.length < 6) {
+        alert('⚠️ La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          email: email,
+          createdAt: new Date().toISOString(),
+          progress: {},
+          calibrationData: null
+        });
+        modal.remove();
+        alert('✅ ¡Cuenta creada exitosamente!');
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    };
+  };
+
+  window.saveCalibrationData = async function(data) {
+    if (!window.firebaseUser) {
+      alert('❌ Debes iniciar sesión para guardar tu progreso');
+      showLoginModal();
+      return false;
+    }
+    
+    try {
+      await setDoc(doc(db, "users", window.firebaseUser.uid), {
+        lastCalibration: data,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+      console.log('✅ Progreso guardado');
+      return true;
+    } catch (error) {
+      console.error('❌ Error guardando:', error);
+      return false;
+    }
+  };
+
+  window.loadUserProgress = async function() {
+    if (!window.firebaseUser) return null;
+    
+    try {
+      const docSnap = await getDoc(doc(db, "users", window.firebaseUser.uid));
+      if (docSnap.exists()) {
+        return docSnap.data();
+      }
+      return null;
+    } catch (error) {
+      console.error('❌ Error cargando progreso:', error);
+      return null;
+    }
+  };
+
+  if (!window.firebaseUser) {
+    updateUIForLoggedOutUser();
+  }
+</script>
+
 <script>
 /* ============ PARTICLES ============ */
 (function(){
@@ -813,7 +1005,7 @@ function setIdiom(lang){
   updateHUD();
 }
 
-function calibrateClick(){
+async function calibrateClick(){
   if(calibrationProgress>=100)return;
   calibrationProgress+=10;
   if(calibrationProgress>100)calibrationProgress=100;
@@ -835,11 +1027,11 @@ function calibrateClick(){
     hudSignal.style.color="var(--green)";
     document.getElementById('report-panel').style.display='block';
     document.getElementById('btn-calc').style.display='none';
-    generarMensajeMatricula();
+    await generarMensajeMatricula();
   }
 }
 
-function generarMensajeMatricula(){
+async function generarMensajeMatricula(){
   const msg=`⚡ ¡Hola NOXEN VIRTUAL! He calibrado mi perfil en el Simulador de Enfoque Cortical de Alta Gama con éxito.%0A%0A`
     +`⚙️ *MI PERFIL COGNITIVO:*%0A`
     +`🧠 *Frecuencia Cerebral:* ${currentFocusFreq.toUpperCase()}%0A`
@@ -847,6 +1039,18 @@ function generarMensajeMatricula(){
     +`🗣️ *Estructura NBF de Inglés:* ${selectedIdiom==="esp"?"Español tradicional":"Posicional (Sustantivos)"}%0A%0A`
     +`🎓 *Estado del Cortex:* EN SINTONÍA (100%)%0A%0A`
     +`Me gustaría recibir más información para inscribirme a NOXEN VIRTUAL (Discovery Max Neuroeducation). ¡Gracias!`;
+  
+  if (window.firebaseUser) {
+    const calibrationData = {
+      frequency: currentFocusFreq,
+      readingPPM: readingPPM,
+      idiomStructure: selectedIdiom,
+      completedAt: new Date().toISOString(),
+      status: 'SYNCHRONIZED'
+    };
+    await window.saveCalibrationData(calibrationData);
+  }
+  
   document.getElementById('wa-final-link').href=`https://wa.me/5566271814?text=${msg}`;
 }
 
